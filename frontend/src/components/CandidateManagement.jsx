@@ -29,8 +29,6 @@ import votingAbi from "../abis/Voting.json";
 import {
   PersonAdd as AddCandidateIcon,
   HowToVote as ElectionIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
   Person as PersonIcon,
   Campaign as CampaignIcon,
   Cancel as CancelIcon,
@@ -57,15 +55,6 @@ const CandidateCard = styled(Card)(({ theme }) => ({
   background: "linear-gradient(45deg, #ffffff 30%, #f8fafc 90%)",
 }));
 
-const ActionButton = styled(Button)(({ theme }) => ({
-  borderRadius: theme.spacing(1),
-  padding: theme.spacing(0.5, 2),
-  fontSize: "0.9rem",
-  "&:hover": {
-    boxShadow: theme.shadows[2],
-  },
-}));
-
 function CandidateManagement() {
   const theme = useTheme();
   const [candidates, setCandidates] = useState([]);
@@ -74,6 +63,7 @@ function CandidateManagement() {
   const [candidateName, setCandidateName] = useState("");
   const [selectedElectionId, setSelectedElectionId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedFilterElection, setSelectedFilterElection] = useState("all"); // New filter state
 
   useEffect(() => {
     fetchCandidates();
@@ -152,6 +142,14 @@ function CandidateManagement() {
     );
     return found ? found.status : "نامشخص";
   };
+
+  // Filter candidates based on the selected election
+  const filteredCandidates =
+    selectedFilterElection === "all"
+      ? candidates
+      : candidates.filter(
+          (candidate) => candidate.electionId === selectedFilterElection
+        );
 
   const CandidateCardComponent = ({ candidate }) => (
     <CandidateCard>
@@ -263,15 +261,36 @@ function CandidateManagement() {
           </Button>
         </Box>
 
+        {/* Election Filter Dropdown */}
+        <Box mb={4}>
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel>فیلتر بر اساس انتخابات</InputLabel>
+            <Select
+              value={selectedFilterElection}
+              onChange={(e) => setSelectedFilterElection(e.target.value)}
+              label="فیلتر بر اساس انتخابات"
+            >
+              <MenuItem value="all">همه انتخابات</MenuItem>
+              {elections.map((election) => (
+                <MenuItem key={election.id} value={election.id}>
+                  {election.name} (ID: {election.id})
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
         <Grid container spacing={3}>
-          {candidates.length === 0 ? (
+          {filteredCandidates.length === 0 ? (
             <Box textAlign="center" width="100%" py={4}>
               <Typography variant="h6" color="text.secondary">
-                هنوز کاندیدایی ثبت نشده است.
+                {selectedFilterElection === "all"
+                  ? "هنوز کاندیدایی ثبت نشده است."
+                  : "هیچ کاندیدایی برای این انتخابات یافت نشد."}
               </Typography>
             </Box>
           ) : (
-            candidates.map((candidate) => (
+            filteredCandidates.map((candidate) => (
               <Grid item xs={12} sm={6} md={4} key={candidate.id}>
                 <CandidateCardComponent candidate={candidate} />
               </Grid>
@@ -322,7 +341,7 @@ function CandidateManagement() {
                   </MenuItem>
                   {elections
                     .filter((election) => election.status !== "ended")
-                    .sort((a, b) => (a.status === "ongoing" ? -1 : 1)) // Prioritize ongoing
+                    .sort((a, b) => (a.status === "ongoing" ? -1 : 1))
                     .map((election) => (
                       <MenuItem key={election.id} value={election.id}>
                         <Box display="flex" alignItems="center" gap={1.5}>

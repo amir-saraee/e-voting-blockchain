@@ -58,7 +58,8 @@ function ElectionResults() {
   const navigate = useNavigate();
   const theme = useTheme();
   const { user } = useAuth();
-  const { walletAddress } = useOutletContext(); // Get walletAddress from VoterLayout
+  const context = useOutletContext();
+  const walletAddress = context?.walletAddress;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -155,7 +156,7 @@ function ElectionResults() {
             <Typography
               variant="h3"
               component="h1"
-              sx={{ fontWeight: 700, color: "primary.main" }}
+              sx={{ fontWeight: 700, color: "primary.main", fontSize: 32 }}
             >
               نتایج انتخابات: {election.name}
             </Typography>

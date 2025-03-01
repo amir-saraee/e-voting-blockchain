@@ -26,6 +26,7 @@ import {
   ExitToApp,
   Person,
   Notifications,
+  BarChart,
 } from "@mui/icons-material";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
@@ -69,6 +70,7 @@ function AdminLayout() {
   const tabs = [
     { path: "elections", label: "انتخابات‌ها", icon: <HowToVote /> },
     { path: "candidates", label: "کاندیداها", icon: <People /> },
+    { path: "reports", label: "گزارش‌های بلاک‌چین", icon: <BarChart /> },
   ];
 
   const currentTab = tabs.findIndex((tab) =>

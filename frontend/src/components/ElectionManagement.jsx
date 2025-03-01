@@ -51,6 +51,7 @@ import {
   People as PeopleIcon,
   BarChart as ResultsIcon,
 } from "@mui/icons-material";
+import { getPersianDegree } from "../utils/degreeConverter";
 
 moment.loadPersian({ dialect: "persian-modern" });
 
@@ -206,7 +207,9 @@ const ElectionCard = ({ election, onEndElection, onViewVoteDetails }) => {
               <Box display="flex" gap={1}>
                 <Chip label={`حداقل سن: ${election.minAge}`} size="small" />
                 <Chip
-                  label={`تحصیلات: ${election.requiredEducation}`}
+                  label={`تحصیلات: ${getPersianDegree(
+                    election.requiredEducation
+                  )}`}
                   size="small"
                 />
               </Box>

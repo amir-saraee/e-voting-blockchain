@@ -32,6 +32,7 @@ import {
 } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { styled, keyframes } from "@mui/system";
+import { getPersianDegree } from "../utils/degreeConverter";
 
 // Define fade-in animation for cards
 const fadeIn = keyframes`
@@ -220,7 +221,9 @@ function VoterDashboard() {
                 />
                 <Chip
                   icon={<SchoolIcon />}
-                  label={`تحصیلات: ${election.requiredEducation}`}
+                  label={`تحصیلات: ${getPersianDegree(
+                    election.requiredEducation
+                  )}`}
                   size="small"
                   variant="outlined"
                   color="primary"

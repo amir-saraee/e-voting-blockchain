@@ -28,6 +28,7 @@ import {
   AccountBalanceWallet as WalletIcon,
   Warning as WarningIcon,
 } from "@mui/icons-material";
+import { getPersianDegree } from "../utils/degreeConverter";
 
 // Function to connect wallet and cast vote
 async function connectWalletAndVote(electionId, candidateId) {
@@ -84,7 +85,7 @@ const ElectionHeader = ({ election, walletAddress, hasVoted }) => {
           <Typography variant="body1">شرایط شرکت:</Typography>
           <Typography>حداقل سن: {election.minAge || "نامشخص"}</Typography>
           <Typography>
-            تحصیلات: {election.requiredEducation || "نامشخص"}
+            تحصیلات: {getPersianDegree(election.requiredEducation) || "نامشخص"}
           </Typography>
         </Box>
       )}
@@ -217,14 +218,17 @@ function VotingPage() {
     setOpenConfirmDialog(false);
     setVoting(true);
     setError(null);
+    setHasVoted(true); // Optimistic update
     try {
       await connectWalletAndVote(electionId, selectedCandidate.id);
       setVoted(true);
-      setHasVoted(true); // Update state after successful vote
     } catch (err) {
       if (err.message?.includes("You have already voted")) {
-        setError("شما قبلاً در این انتخابات رأی داده‌اید.");
+        setError(
+          "شما قبلاً در این انتخابات رأی داده‌اید. لطفاً نتایج را مشاهده کنید."
+        );
       } else {
+        setHasVoted(false); // Roll back if vote fails for another reason
         setError(err.message || "خطا در ثبت رأی.");
       }
     } finally {

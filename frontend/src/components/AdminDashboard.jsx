@@ -4,6 +4,7 @@ import ElectionManagement from "./ElectionManagement";
 import CandidateManagement from "./CandidateManagement";
 import ElectionResults from "./ElectionResults";
 import ElectionDetails from "./ElectionDetails";
+import BlockchainReports from "./BlockchainReports";
 
 function AdminDashboard() {
   return (
@@ -13,6 +14,7 @@ function AdminDashboard() {
         <Route path="elections/:electionId" element={<ElectionDetails />} />
         <Route path="candidates" element={<CandidateManagement />} />
         <Route path="results/:electionId" element={<ElectionResults />} />
+        <Route path="reports" element={<BlockchainReports />} />
       </Route>
     </Routes>
   );

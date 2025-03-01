@@ -10,6 +10,8 @@ import {
   IconButton,
   useTheme,
   styled,
+  Stack,
+  Alert,
 } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -19,7 +21,10 @@ import {
   AccountBalanceWallet as WalletIcon,
   ContentCopy as CopyIcon,
   Check as CheckIcon,
+  Person as PersonIcon,
 } from "@mui/icons-material";
+import axios from "axios";
+import { getPersianDegree } from "../utils/degreeConverter";
 
 const StyledHeader = styled(Box)(({ theme }) => ({
   background: `linear-gradient(45deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
@@ -48,6 +53,7 @@ function VoterLayout() {
   const { user, logout } = useAuth();
   const [walletAddress, setWalletAddress] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [userProfile, setUserProfile] = useState(null); // State for user profile
 
   useEffect(() => {
     const checkWalletConnection = async () => {
@@ -63,8 +69,23 @@ function VoterLayout() {
       }
     };
 
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3001/api/auth/profile",
+          {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }
+        );
+        setUserProfile(response.data); // Expecting { age, education, ... }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
     checkWalletConnection();
-  }, []);
+    fetchUserProfile(); // Fetch profile data on mount
+  }, [user]);
 
   const connectWallet = async () => {
     if (!window.ethereum) {
@@ -126,6 +147,25 @@ function VoterLayout() {
         </Box>
 
         <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.2)" }} />
+
+        {/* User Profile Section */}
+        {userProfile ? (
+          <Stack direction="row" spacing={2} mb={3} alignItems="center">
+            <PersonIcon fontSize="large" />
+            <Box>
+              <Typography variant="body1">
+                سن: {userProfile.age || "نامشخص"}
+              </Typography>
+              <Typography variant="body1">
+                تحصیلات: {getPersianDegree(userProfile.education) || "نامشخص"}
+              </Typography>
+            </Box>
+          </Stack>
+        ) : (
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            لطفاً پروفایل خود را کامل کنید.
+          </Alert>
+        )}
 
         {walletAddress ? (
           <WalletCard>
